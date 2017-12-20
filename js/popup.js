@@ -9,7 +9,7 @@ browser = isChrome ? chrome : browser;
 const DOMAIN_REGEX = /(?:[\w-]+\.)*([\w-]{1,63})(?:\.(?:\w{3}|\w{2}))(?:$|\/)/i;
 
 const render = function () {
-    browser.tabs.getSelected(null, function (tab) {
+    var tab_action = function (tab) {
         browser.runtime.sendMessage(
             {
                 action: 'show_vulnerabilities',
@@ -17,7 +17,16 @@ const render = function () {
             },
             doRender
         );
-    });
+    };
+    if (isChrome) {
+        browser.tabs.getSelected(null, tab_action);
+    } else {
+        browser.tabs.query({active: true}).then(function (tabs) {
+            for (let tab of tabs) {
+                tab_action(tab)
+            }
+        });
+    }
 };
 
 const doRender = (response) => {
@@ -95,8 +104,24 @@ const doRenderIndex = () => {
 };
 
 const onClearClick = () => {
-    browser.tabs.getSelected(null, tab =>
-        browser.runtime.sendMessage({action: 'clear_data', tab_id: tab.id}, doRender));
+    var tab_action = function (tab) {
+        browser.runtime.sendMessage(
+            {
+                action: 'clear_data',
+                tab_id: tab.id
+            },
+            doRender
+        );
+    };
+    if (isChrome) {
+        browser.tabs.getSelected(null, tab_action);
+    } else {
+        browser.tabs.query({active: true}).then(function (tabs) {
+            for (let tab of tabs) {
+                tab_action(tab)
+            }
+        });
+    }
 };
 
 const sortSorftByScore = (soft) =>

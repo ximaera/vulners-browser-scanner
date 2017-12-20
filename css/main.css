@@ -9,8 +9,7 @@ body {
     font-size: 14px;
     min-width: 450px;
     min-height: 600px;
-    overflow-y: hidden;
-    height: 100%;
+    overflow-y: auto;
     background-color: #fff;
     color: #38383a;
     margin: 0;
